@@ -12,11 +12,8 @@ def classifyFoliage(image):
     # Create a mask that has 255 where there is part of a plant in the image
     #   and 0 everywhere else
     # BEGIN STUDENT CODE
-    #H - 22, 53
-    #S - 0, 255
-    #V - 24, 123
     hsvImage = transformFromBGR(image, 'HSV')
-    rVals = [(22, 53), (0, 255), (24, 123)]
+    rVals = [(22, 70), (92, 255), (24, 150)]
     mask = createMask(hsvImage, rVals, 'HSV')
     foliage_mask = mask
     # END STUDENT CODE

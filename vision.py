@@ -58,7 +58,6 @@ def measureHeight(foliage_mask):
                 for h in range(9, 0, -1):
                     if i <= hm[h - 1]:
                         return (h - 1) + ((i - hm[h - 1]) / (hm[h] - hm[h - 1]))
-                return 9
     # END STUDENT CODE
     return None
 

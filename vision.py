@@ -9,14 +9,15 @@ cv = cv2
 # indicates no plants and 255 indicates plants)
 
 
-def classifyFoliage(image):
+def classifyFoliage(image, rVals=None):
     foliage_mask = np.zeros(image.shape[0:2], np.uint8)
     # Your code goes here:
     # Create a mask that has 255 where there is part of a plant in the image
     #   and 0 everywhere else
     # BEGIN STUDENT CODE
     hsvImage = transformFromBGR(image, 'HSV')
-    rVals = [(22, 70), (92, 255), (24, 150)]
+    if rVals is None:
+        rVals = [(22, 70), (92, 255), (24, 150)]
     foliage_mask = createMask(hsvImage, rVals, 'HSV')
     print(foliage_mask.shape)
     print(foliage_mask)
@@ -80,7 +81,7 @@ def colorCorrect(image, blue_goal, green_goal, red_goal):
     red_square = image[225:400, 1135:1295]  # 99.5
     green_square = image[228:395, 1345:1505]
     blue_square = image[230:405, 1560:1720]
-    
+
     blue_means = np.mean(blue_square, axis=(0, 1))
     green_means = np.mean(green_square, axis=(0, 1))
     red_means = np.mean(red_square, axis=(0, 1))
@@ -133,6 +134,7 @@ def classifyFoliageCorrected(image):
     # note that you will probably need to change the filter values to
     #   work well for the color-corrected images
     # BEGIN STUDENT CODE
+    rVals = [(), (), ()]  # ToDO
     # END STUDENT CODE
-    foliage_mask = classifyFoliage(corrected_image)
+    foliage_mask = classifyFoliage(corrected_image, rVals)
     return foliage_mask

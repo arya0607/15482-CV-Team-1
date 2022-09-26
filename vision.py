@@ -75,17 +75,34 @@ def colorCorrect(image, blue_goal, green_goal, red_goal):
     # Note that while the lecture notes describe an affine (3x4) transform,
     #  here we have only 3 colors, so it has to be a Euclidean (3x3) tranform
     # BEGIN STUDENT CODE
+
+    # crop the image to find the mean, image[startY:endY, startX:endX]
+    red_square = image[225:400, 1135:1295]  # 99.5
+    green_square = image[228:395, 1345:1505]
+    blue_square = image[230:405, 1560:1720]
+    
+    blue_means = np.mean(blue_square, axis=(0, 1))
+    green_means = np.mean(green_square, axis=(0, 1))
+    red_means = np.mean(red_square, axis=(0, 1))
     # END STUDENT CODE
 
     A = np.zeros((9, 9), np.float)
     # Your code goes here:
     # Fill in the rows of the matrix, according to the notes
     # BEGIN STUDENT CODE
+    for r in range(3):
+        A[r, r*3], A[r, r*3+1], A[r, r*3+2] = blue_means
+        A[3+r, r*3], A[3+r, r*3+1], A[3+r, r*3+2] = green_means
+        A[6+r, r*3], A[6+r, r*3+1], A[6+r, r*3+2] = red_means
     # END STUDENT CODE
     d = np.zeros((1, 9))
     # Your code goes here:
     # Fill in the d vector with the "goal" colors
     # BEGIN STUDENT CODE
+    for c in range(3):
+        d[0, c] = blue_goal[c]
+        d[0, 3+c] = green_goal[c]
+        d[0, 6+c] = red_goal[c]
     # END STUDENT CODE
 
     x = np.matmul(np.matmul(np.linalg.pinv(np.matmul(A.T, A)), A.T), d.T)
@@ -95,6 +112,10 @@ def colorCorrect(image, blue_goal, green_goal, red_goal):
     # Your code goes here:
     # Apply the transform to the pixels of the image and return the new image
     # BEGIN STUDENT CODE
+    a, b, _ = np.shape(image)
+    for i in range(a):
+        for j in range(b):
+            corrected_image[i, j] = np.matmul(T, image[i, j])
     # END STUDENT CODE
 
     return corrected_image

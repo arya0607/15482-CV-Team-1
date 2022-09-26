@@ -134,7 +134,7 @@ def filterImageText(image, color_space='BGR', width=500, height=500):
             showImage(wname, output)
 
 # Create a single channel mask, with same dimensions as 'image'.
-# 'rVals' is a list of pais, where each pair is the lower/upper bound
+# 'rVals' is a list of pairs, where each pair is the lower/upper bound
 # on one of the channels of the color_space
 def createMask(image, rVals, color_space):
     if (color_space == 'HSV'):

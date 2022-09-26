@@ -31,7 +31,7 @@ def classifyFoliage2(image):
     #   and 0 everywhere else
     # BEGIN STUDENT CODE
     hsvImage = transformFromBGR(image, 'HSV')
-    rVals = [(50, 150), (105, 255), (90, 255)]
+    rVals = [(50, 140), (150, 255), (90, 255)]
     foliage_mask = createMask(hsvImage, rVals, 'HSV')
     print(foliage_mask.shape)
     print(foliage_mask)

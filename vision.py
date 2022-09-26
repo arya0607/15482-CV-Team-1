@@ -23,6 +23,18 @@ def classifyFoliage(image):
     return foliage_mask  # 2464 * 3280, y * x
     # END STUDENT CODE
 
+def classifyFoliage2(image):
+    foliage_mask = np.zeros(image.shape[0:2], np.uint8)
+    # Your code goes here:
+    # Create a mask that has 255 where there is part of a plant in the image
+    #   and 0 everywhere else
+    # BEGIN STUDENT CODE
+    hsvImage = transformFromBGR(image, 'HSV')
+    rVals = [(50, 150), (105, 255), (90, 255)]
+    foliage_mask = createMask(hsvImage, rVals, 'HSV')
+    print(foliage_mask.shape)
+    print(foliage_mask)
+    return foliage_mask 
 # Given the foliage mask (as would be returned from classifyFoliage),
 #   return the height in cms the tallest plant that crosses in front
 #   of the measuring stick. Return None if no foliage overlaps the stick
@@ -117,7 +129,6 @@ def colorCorrect(image, blue_goal, green_goal, red_goal):
         for j in range(b):
             corrected_image[i, j] = np.matmul(T, image[i, j])
     # END STUDENT CODE
-
     return corrected_image
 
 
@@ -134,5 +145,5 @@ def classifyFoliageCorrected(image):
     #   work well for the color-corrected images
     # BEGIN STUDENT CODE
     # END STUDENT CODE
-    foliage_mask = classifyFoliage(corrected_image)
+    foliage_mask = classifyFoliage2(corrected_image)
     return foliage_mask

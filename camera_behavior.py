@@ -42,6 +42,9 @@ class TakeImage(Behavior):
 
     ### CONDITIONS ###
 
+    def light_perfect(self):
+        return 450 <= self.light < 550
+
     def should_increase_light(self):
         return self.light < 450
 

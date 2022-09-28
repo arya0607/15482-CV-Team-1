@@ -1,7 +1,7 @@
 Part 1. # Describe your approach here
 
 We initially started using the BGR color space but found that it was hard to differentiate between the soil and the foliage.
-Hence we decided to use HSV as our color space because it seemed like it was optimal for seperating colors. 
+Hence we decided to use HSV as our color space because it seemed like it was optimal for separating colors. 
 We referenced the lecture slides to determine initial ranges for classifying foliage, and performed gradient ascent to determine optimal ranges. 
 
 
@@ -9,8 +9,11 @@ We referenced the lecture slides to determine initial ranges for classifying fol
 Part 2. # Describe your approach here
 
 We opened the Day-02 image in preview locally and found the row, column indices for a certain points. First, we found the 4 coordinates for the stick 
-polygon. We did draw_polygon to get a modified verison of the foliage that had special grayscale pixel values (we used 128, different from foliage 
+polygon. We did draw_polygon to get a modified version of the foliage that had special grayscale pixel values (we used 128, different from foliage 
 pixels which were 255) for all the pixels inside the stick. Similarly, as earlier, we found the row, column indices for each height mark (1 inch) 
 from Preview app on mac. We stored these values in a height dictionary. Then, we looped over all the pixels and whenever we found an intersection 
 between the foliage and the stick, we found the proportionate height of that pixel by looking at the height dictionary. We looped from top to bottom, 
-so returning the first one that satisfies the intersection condtion will give us the maximum height. :))
+so returning the first one that satisfies the intersection condition will give us the maximum height. :))
+
+Part 5.
+Camera images to be stored in "agents/CV_HW/greenhouse_images/"

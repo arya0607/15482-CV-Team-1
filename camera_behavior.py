@@ -59,7 +59,7 @@ class TakeImage(Behavior):
 
     ### ACTION FUNCTIONS ###
 
-    def increaseLight(self):
+    def increase_light(self):
         self.setLED(self.led+20)
 
     def decrease_light(self):

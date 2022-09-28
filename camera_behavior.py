@@ -90,6 +90,23 @@ class TakeImage(Behavior):
 
     # END STUDENT CODE
 
+    # Added, not originally in starter file
+    def setInitial(self):
+        self.led = 0
+        self.setLED(self.led)
+
+    # Added, not originally in starter file
+    def enable(self):
+        # Use 'enable' trigger to transition the FSM out of the 'initial' state
+        self.setInitial()
+        self.trigger("enable")
+
+    # Added, not originally in starter file
+    def disable(self):
+        # Use 'diable' trigger to transition the FSM into the 'initial' state
+        self.setInitial()
+        self.trigger("disable")
+
     def perceive(self):
         self.time = self.sensordata['unix_time']
         # Add any sensor data variables you need for the behavior

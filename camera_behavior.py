@@ -5,7 +5,7 @@ import sys
 import os.path as op
 
 # Nathan: This line was here when I found it VVV , probably need to uncomment if converting to absolute path
-# sys.path.append(op.dirname(op.dirname(op.abspath(__file__)))+"/../lib/")
+sys.path.append(op.dirname(op.dirname(op.abspath(__file__)))+"/../lib/")
 
 from terrabot_utils import clock_time
 import cv2
@@ -113,7 +113,7 @@ class TakeImage(Behavior):
     # action wrapper to take picture
     def take_picture(self):
         # relative pathname from TerraBot.py, TODO: might want to make absolute in the future
-        self.pathname = "agents/CV_HW/greenhouse_images/" + str(self.time)
+        self.pathname = "agents/CV_HW/greenhouse_images/" + str(int(self.time)) + ".jpg"
         self.takePicture(self.pathname)
 
     def print_warning(self):

@@ -35,6 +35,43 @@ class TakeImage(Behavior):
                            ignore_invalid_triggers=True)
         # END STUDENT CODE
 
+        ### TRANSITIONS ###
+        # TODO: Clarify whether we are to use an enable/disable, or just use doStep.
+        #  Even though starter file did not come with enable disable functions.
+        #  Layers.py seems to use Behavior.enable for all behaviors, so
+        #  current implementation assumes we are to use enable/disable,
+
+        self.fsm.add_transition(trigger='enable', source='halt', dest='init')
+
+        self.fsm.add_transition(trigger='doStep', source='init', dest='light')
+        self.fsm.add_transition(trigger='disable', source='*', dest='halt')
+
+        # Transitions from Light
+        self.fsm.add_transition(trigger='doStep', source='light', dest='firstcheck', conditions=[
+                                "light_perfect"], after=["take_picture", "set_timer_10"])
+        self.fsm.add_transition(trigger='doStep', source='light', dest='light', conditions=[
+                                "should_decrease_light"], after=["decrease_light"])
+        self.fsm.add_transition(trigger='doStep', source='light', dest='light', conditions=[
+                                "should_increase_light"], after=["increase_light"])
+
+        # Transitions from First Check
+        self.fsm.add_transition(trigger='doStep', source='firstcheck', dest='halt', conditions=[
+                                "time_is_up", "pic_exists"], after=["process_image", "turn_off_light"])
+        self.fsm.add_transition(trigger='doStep', source='firstcheck', dest='secondcheck', conditions=[
+                                "time_is_up", "no_pic_exists"], after=["take_picture", "set_timer_20"])
+
+        # Transitions from Second Check
+        self.fsm.add_transition(trigger='doStep', source='secondcheck', dest='halt', conditions=[
+                                "time_is_up", "pic_exists"], after=["process_image", "turn_off_light"])
+        self.fsm.add_transition(trigger='doStep', source='secondcheck', dest='thirdcheck', conditions=[
+                                "time_is_up", "no_pic_exists"], after=["take_picture", "set_timer_20"])
+
+        # Transitions from Third Check
+        self.fsm.add_transition(trigger='doStep', source='thirdcheck', dest='halt', conditions=[
+                                "time_is_up", "pic_exists"], after=["process_image", "turn_off_light"])
+        self.fsm.add_transition(trigger='doStep', source='thirdcheck', dest='halt', conditions=[
+                                "time_is_up", "no_pic_exists"], after=["print_warning", "turn_off_light"])
+
     # Add the condition and action functions
     #  Remember: if statements only in the condition functions;
     #            modify state information only in the action functions
@@ -68,6 +105,7 @@ class TakeImage(Behavior):
     def decrease_light(self):
         self.setLED(self.led-20)
 
+    # TODO: Should we turn off light when we halt, how does this affect other behaviors??
     def turn_off_light(self):
         self.setLED(0)
 

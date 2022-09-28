@@ -28,6 +28,7 @@ class TakeImage(Behavior):
         self.pathname = ""  # pathname to image, initially empty, filled once an image is taken
 
         self.initial = 'halt'
+        self.lastState = self.initial
         self.states = [self.initial, 'init', 'light',
                        'firstcheck', "secondcheck", "thirdcheck"]
 
@@ -164,6 +165,11 @@ class TakeImage(Behavior):
     def takePicture(self, path_name):
         self.actuators.doActions((self.name, self.sensors.getTime(),
                                   {"camera": path_name}))
+
+    def setLED(self, level):
+        self.led = max(0, min(255, level))
+        self.actuators.doActions((self.name, self.sensors.getTime(),
+                                  {"led": self.led}))
 
     def processImage(self, image):
         foliage_mask = classifyFoliage(image)

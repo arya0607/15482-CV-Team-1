@@ -11,7 +11,7 @@ class ROSSensors(Sensors):
     temperature = 0
     humidity = 0
     weight = 0
-    moisture = 0
+    moisture = [0,0]
     wlevel = 0
     light_level_raw = [0, 0]
     temperature_raw = [0, 0]
@@ -33,29 +33,25 @@ class ROSSensors(Sensors):
 
     # Implement subscriber handlers here
     # BEGIN STUDENT CODE
-    def light_callback(self, data):
-        self.light_level_raw = data.data
-        self.light_level = sum(data.data) / 2
-
-    def temp_callback(self, data):
-        self.temperature_raw = data.data
-        self.temperature = sum(data.data) / 2
-
-    def humid_callback(self, data):
-        self.humidity_raw = data.data
-        self.humidity = sum(data.data) / 2
-    
-    def weight_callback(self, data):
-        self.weight_raw = data.data
-        self.weight = sum(data.data) / 2
-
-    def level_callback(self, data):
-        self.wlevel = data.data
-        self.wlevel_raw = data.data
-    
-    def moist_callback(self, data):
-        self.moisture_raw = data.data
+    def light_callback(self,data):
+        self.light_level = (data.data[0]+data.data[1])/2;
+        self.light_level_raw = data.data[0];
+    def temp_callback(self,data):
+        self.temperature = (data.data[0]+data.data[1])/2;
+        self.temperature_raw = data.data[0];
+    def humid_callback(self,data):
+        self.humidity = (data.data[0]+data.data[1])/2;
+        self.humidity_raw = data.data[0];
+    def weight_callback(self,data):
+        self.weight = (data.data[0]+data.data[1])/2;
+        self.weight_raw = data.data[0];
+    def moist_callback(self,data):
         self.moisture = data.data
+        self.moisture_raw = data.data
+    def level_callback(self,data):
+        self.wlevel = data.data
+
+
     # END STUDENT CODE
 
     def doSense(self):
@@ -92,11 +88,11 @@ class ROSActuators(Actuators):
         # Publish actuator commands here
         # BEGIN STUDENT CODE
         (behaviorName, time, act_dict) = actions_tuple
-        for name, val in act_dict.items():
+        for name in act_dict:
+            val = act_dict[name]
             self.actuators[name].publish(val)
             self.actuator_state[name] = val
         # END STUDENT CODE
-        pass
 
 if __name__ == '__main__':
     rospy.set_param('use_sim_time', True)

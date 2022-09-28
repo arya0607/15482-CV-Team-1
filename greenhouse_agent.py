@@ -13,20 +13,12 @@ class BehavioralGreenhouseAgent:
         rospy.init_node('greenhouseagent_behavioral', anonymous = True)
 
         # Initialize ROSSensors, ROSActuators, BehavioralLayer, and behaviors
-        # BEGIN STUDENT CODE
-        sensors = ros_hardware.ROSSensors()
+         # BEGIN STUDENT CODE
+        sensors =  ros_hardware.ROSSensors()
         actuators = ros_hardware.ROSActuators()
-        behaviors = []
-        behaviors.append(gb.Light())
-        behaviors.append(gb.LowerHumid())
-        behaviors.append(gb.LowerSMoist())
-        behaviors.append(gb.LowerTemp())
-        behaviors.append(gb.RaiseSMoist())
-        behaviors.append(gb.RaiseTemp())
-        behaviors.append(ping.Ping())
-        bl = layers.BehavioralLayer(sensors, actuators, behaviors)
-        self.behavioral = bl
-        bl.startAll()
+        behaviors = [gb.Light(),gb.RaiseTemp(),gb.LowerTemp(),gb.LowerHumid(),gb.RaiseSMoist(),gb.LowerSMoist(),ping.Ping()]
+        self.behavioral = layers.BehavioralLayer(sensors,actuators,behaviors)
+        self.behavioral.startAll()
         # END STUDENT CODE
 
     def main(self):
@@ -47,27 +39,18 @@ class LayeredGreenhouseAgent:
 
         # Initialize the architecture
         # BEGIN STUDENT CODE
-        self.schedulefile = schedulefile
-        sensors = ros_hardware.ROSSensors()
+        sensors =  ros_hardware.ROSSensors()
         actuators = ros_hardware.ROSActuators()
-        behaviors = [] 
-        behaviors.append(gb.Light())
-        behaviors.append(gb.LowerHumid())
-        behaviors.append(gb.LowerSMoist())
-        behaviors.append(gb.LowerTemp())
-        behaviors.append(gb.RaiseSMoist())
-        behaviors.append(gb.RaiseTemp())
-        behaviors.append(ping.Ping())
-        el = layers.ExecutiveLayer()
-        bl = layers.BehavioralLayer(sensors, actuators, behaviors)
-        el.setBehavioralLayer(bl)
-        pl = layers.PlanningLayer(self.schedulefile)
-        pl.setExecutive(el)
-        pl.getNewSchedule()
-        el.setPlanningLayer(pl)
-        self.bl = bl
-        self.pl = pl
-        self.el = el
+        behaviors = [gb.Light(),gb.RaiseTemp(),gb.LowerTemp(),gb.LowerHumid(),gb.RaiseSMoist(),gb.LowerSMoist(),ping.Ping()]
+        self.behavioral = layers.BehavioralLayer(sensors,actuators,behaviors)
+        self.planning = layers.PlanningLayer(schedulefile)
+        
+        self.executive = layers.ExecutiveLayer()
+        self.planning.setExecutive(self.executive)
+        self.executive.setPlanningLayer(self.planning)
+        self.executive.setBehavioralLayer(self.behavioral)
+        self.executive.setSchedule(schedulefile)
+        self.planning.getNewSchedule()
         # END STUDENT CODE
 
     def main(self):
@@ -77,10 +60,9 @@ class LayeredGreenhouseAgent:
             t = time_since_midnight(rospy.get_time())
             # Run a step of each layer of the architecture
             # BEGIN STUDENT CODE
-
-            self.pl.doStep(t)
-            self.el.doStep(t)
-            self.bl.doStep()
+            self.behavioral.doStep()
+            self.planning.doStep(t)
+            self.executive.doStep(t)
             # END STUDENT CODE
             rospy.sleep(1)
 

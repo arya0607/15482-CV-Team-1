@@ -8,6 +8,7 @@ from terrabot_utils import time_since_midnight
 import greenhouse_behaviors as gb
 import ping_behavior as ping
 import camera_behavior as camera_behavior
+import email_behavior as email_behavior
 
 
 class BehavioralGreenhouseAgent:
@@ -49,7 +50,7 @@ class LayeredGreenhouseAgent:
         sensors = ros_hardware.ROSSensors()
         actuators = ros_hardware.ROSActuators()
         behaviors = [gb.Light(), gb.RaiseTemp(), gb.LowerTemp(
-        ), gb.LowerHumid(), gb.RaiseSMoist(), gb.LowerSMoist(), ping.Ping(), camera_behavior.TakeImage()]
+        ), gb.LowerHumid(), gb.RaiseSMoist(), gb.LowerSMoist(), ping.Ping(), email_behavior.Email(), camera_behavior.TakeImage()]
         self.behavioral = layers.BehavioralLayer(sensors, actuators, behaviors)
         self.planning = layers.PlanningLayer(schedulefile)
 

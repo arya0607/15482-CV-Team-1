@@ -1,3 +1,4 @@
+from email.mime.image import MIMEImage
 from behavior import *
 from transitions import Machine
 import base64
@@ -10,6 +11,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import lxml.html
 from datetime import date
+
+import sys
+import os
+import os.path as op
+import glob
+sys.path.append(op.dirname(op.dirname(op.abspath(__file__)))+"/../lib/")
 
 
 '''
@@ -87,7 +94,7 @@ class Email(Behavior):
             google_client_id, google_client_secret, refresh_token)
         return response['access_token'], response['expires_in']
 
-    def send_mail(self, fromaddr, toaddr, subject, message):
+    def send_mail(self, fromaddr, toaddr, subject, message, recent_image):
         access_token, expires_in = self.refresh_authorization(
             GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN)
         auth_string = self.generate_oauth2_string(
@@ -105,6 +112,17 @@ class Email(Behavior):
         part_html = MIMEText(message.encode('utf-8'), 'html', _charset='utf-8')
         msg_alternative.attach(part_text)
         msg_alternative.attach(part_html)
+
+        print("recent_image: ", recent_image)
+        if recent_image:
+            with open(recent_image, 'rb') as f:
+                img_data = f.read()
+
+            # print("name: ", op.basename(recent_image))
+            # print("img_data: ", img_data)
+            image = MIMEImage(img_data, name=op.basename(recent_image))
+            msg.attach(image)
+
         server = smtplib.SMTP('smtp.gmail.com:587')
         server.ehlo(GOOGLE_CLIENT_ID)
         server.starttls()
@@ -122,7 +140,16 @@ class Email(Behavior):
         message = '<b>STATUS OF TERRABOT1</b><br><br>' + str(self.sensordata)
         print("Sending email...")
 
+        folder_path = r'agents/CV_HW/greenhouse_images/'
+        file_type = r'\*jpg'
+        files = os.listdir("./greenhouse_images/")
+        print("files: ", files)
+        if files:
+            recent_image = "./greenhouse_images/" + max(files)
+        else:
+            recent_image = None
+
         for add in toadds:
-            self.send_mail(fromaddr, add, subject, message)
+            self.send_mail(fromaddr, add, subject, message, recent_image)
         print("Email sent!")
     # END STUDENT CODE

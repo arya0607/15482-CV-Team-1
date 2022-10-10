@@ -11,4 +11,4 @@ WHENEVER 1-16:00:00
 
 #lights on between 20 am and 21 pm
 WHENEVER 1-20:00:00
-  ENSURE led UNTIL 1-21:00:00
+  ENSURE not led UNTIL 1-21:00:00

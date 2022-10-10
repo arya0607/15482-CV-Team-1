@@ -10,6 +10,7 @@ WHENEVER camera != None
   SET image = camera
   WAIT os.path.exists(image) FOR 30
   SET num_pics = num_pics + 1
+  PRINT "A picture was just taken
 
 # Ensures that pictures are being taken according to the scheduler
 WHENEVER 1-09:30:00 # give 30 minutes buffer
@@ -23,3 +24,9 @@ WHENEVER 1-17:30:00
 
 WHENEVER 1-21:30:00
   ENSURE num_pics >= 4
+
+WHENEVER 1-00:00:00
+  SET daily_pics = num_pics
+  WAIT UNTIL 1-23:59:59
+  SET dpic = num_pics - daily_pics
+  ENSURE 3 <= dpic

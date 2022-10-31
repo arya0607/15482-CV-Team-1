@@ -28,7 +28,7 @@ REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
 
 GOOGLE_CLIENT_ID = '800602998301-8qfktit8jclgcpm9nui7ototk4osmjjm.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = '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'
-GOOGLE_REFRESH_TOKEN = "1//04nhzpPo62sE6CgYIARAAGAQSNwF-L9IrC6zVBU_vtZCOeVWb52Z4rNmJyd-gd7FGWj8mHan-a-GkWt-vNFPAEA0v9iiFVjJJEH4"
+GOOGLE_REFRESH_TOKEN = "1//0d12S8CyPZKbRCgYIARAAGA0SNwF-L9IrsBVuxrC_AHO8Mr0i6U4aiezzOIT87QkauyyUuVUbQ3ZxwZ3Ji4Uk2ZtxEWXQvsoUAI4"
 
 
 class Email(Behavior):
@@ -150,6 +150,9 @@ class Email(Behavior):
             recent_image = None
 
         for add in toadds:
-            self.send_mail(fromaddr, add, subject, message, recent_image)
-        print("Email sent!")
+            try:
+                self.send_mail(fromaddr, add, subject, message, recent_image)
+                print("Email sent!")
+            except:
+                print("Email token needs to be refreshed")
     # END STUDENT CODE

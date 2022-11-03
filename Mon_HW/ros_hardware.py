@@ -11,7 +11,7 @@ class ROSSensors(Sensors):
     temperature = 0
     humidity = 0
     weight = 0
-    moisture = [0,0]
+    moisture = 0
     wlevel = 0
     light_level_raw = [0, 0]
     temperature_raw = [0, 0]
@@ -33,25 +33,34 @@ class ROSSensors(Sensors):
 
     # Implement subscriber handlers here
     # BEGIN STUDENT CODE
-    def light_callback(self,data):
-        self.light_level = (data.data[0]+data.data[1])/2;
-        self.light_level_raw = data.data[0];
-    def temp_callback(self,data):
-        self.temperature = (data.data[0]+data.data[1])/2;
-        self.temperature_raw = data.data[0];
-    def humid_callback(self,data):
-        self.humidity = (data.data[0]+data.data[1])/2;
-        self.humidity_raw = data.data[0];
-    def weight_callback(self,data):
-        self.weight = (data.data[0]+data.data[1])/2;
-        self.weight_raw = data.data[0];
-    def moist_callback(self,data):
-        self.moisture = data.data
-        self.moisture_raw = data.data
-    def level_callback(self,data):
-        self.wlevel = data.data
-
-
+    def light_callback(self, data):
+    	ROSSensors.light_level_raw = data.data
+    	ROSSensors.light_level = (data.data[0] + data.data[1]) / 2
+    	return
+    	
+    def temp_callback(self, data):
+    	ROSSensors.temperature_raw = data.data
+    	ROSSensors.temperature = (data.data[0] + data.data[1]) / 2
+    	return
+    	
+    def humid_callback(self, data):
+    	ROSSensors.humidity_raw = data.data
+    	ROSSensors.humidity = (data.data[0] + data.data[1]) / 2
+    	return
+    	
+    def weight_callback(self, data):
+    	ROSSensors.weight_raw = data.data
+    	ROSSensors.weight = (data.data[0] + data.data[1]) / 2
+    	return
+    	
+    def moist_callback(self, data):
+    	ROSSensors.moisture_raw = data.data
+    	ROSSensors.moisture = data.data
+    	return
+    	
+    def level_callback(self, data):
+    	ROSSensors.wlevel_raw = data.data
+    	ROSSensors.wlevel = data.data
     # END STUDENT CODE
 
     def doSense(self):
@@ -89,9 +98,8 @@ class ROSActuators(Actuators):
         # BEGIN STUDENT CODE
         (behaviorName, time, act_dict) = actions_tuple
         for name in act_dict:
-            val = act_dict[name]
-            self.actuators[name].publish(val)
-            self.actuator_state[name] = val
+        	self.actuators[name].publish(act_dict[name])	# publish new commands
+        	self.actuator_state[name] = act_dict[name]
         # END STUDENT CODE
 
 if __name__ == '__main__':

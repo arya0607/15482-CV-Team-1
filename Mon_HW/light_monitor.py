@@ -13,6 +13,7 @@ class LightMonitor(Monitor):
 
     def reset(self):
         self.insolation = 0
+        # self.current_optimal = 900
 
     def setTarget(self, target):
         self.target = target
@@ -36,11 +37,17 @@ class LightMonitor(Monitor):
 
     def perceive(self):
         # BEGIN STUDENT CODE
+        print("HELLOWOOOWOW perceive should set sensor data")
+        self.mtime = self.sensordata["midnight_time"]
+        self.time = self.sensordata["unix_time"]
+        self.light = self.sensordata["light"]
+        print("time", self.mtime)
+        print("light level", self.light)
+        # print("led level", self.lightBehavior.led)
         # END STUDENT CODE
-        pass
 
     def monitor(self):
-        #print("INSOLATION: %.1f %d" %(self.mtime/3600.0, self.insolation))
+        # print("INSOLATION: %.1f %d" %(self.mtime/3600.0, self.insolation))
         if (self.mtime < time_since_midnight(self.last_time)):
             print("INSOLATION TODAY: %.1f" %self.insolation)
             self.reset()
@@ -52,8 +59,24 @@ class LightMonitor(Monitor):
             #  for the LightBehavior based on this calculation
 
             # BEGIN STUDENT CODE
+            # add the ambient light and TerraBot light
+            self.insolation += (self.light * self.dt) / 3600.0
+            print("insolation HERE", self.insolation)
+            ambient = self.non_lighting_ambient_insolation(self.mtime, 86399)
+            #print(self.integrate_ambient(0, 86399))
+            #assert(False)
+            remaining_light = self.target - self.insolation - ambient
+            time_left = self.lighting_time_left(self.mtime)
+            
+            # set optimal limit
+            if time_left != 0:
+            	self.current_optimal = (remaining_light  * 3600 / float(time_left))
+            	self.executive.behavioral.getBehavior("LightBehavior").set_optimal(
+            	    self.current_optimal)
+            else:
+            	print("time left is 0")
             # END STUDENT CODE
-            pass
+            
 
     def integrate_ambient(self, ts, te):
         ambient_insolation = 0

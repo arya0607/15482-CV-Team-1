@@ -1,6 +1,6 @@
 import numpy as np
 import pickle
-
+import math
 linreg = None
 
 def regression(now, state):
@@ -25,16 +25,37 @@ class KalmanFilter():
 
     def predict(self, prediction, process_var):
         # BEGIN STUDENT CODE
+        tempMu = self.mu
+        alpha = prediction/tempMu
+        self.mu = prediction
+        self.var = (alpha**2)*self.var + process_var
         # END STUDENT CODE
-        pass
 
     def update(self, obs, obs_var):
         # BEGIN STUDENT CODE
+        k = self.var*((self.var + obs_var)**(-1))
+        self.mu = self.mu + k*(obs - self.mu)
+        self.var = (1-k)*self.var
         # END STUDENT CODE
-        pass
 
     def estimate(self, now, prev_state, humidity0, humidity1,
                  outlier_rejection=False):
         # BEGIN STUDENT CODE
+        if outlier_rejection == False:
+        	prediction = regression(now, prev_state)
+        	self.predict(prediction, 1)
+        	self.update(humidity0, 4)
+        	self.update(humidity1, 4)
+        else:
+        	prediction = regression(now, prev_state)
+        	self.predict(prediction, 1)
+        	
+        	stddev0 = abs(self.mu - humidity0)/math.sqrt(self.var)
+        	if stddev0 < 2:
+        		self.update(humidity0, 4)
+        	stddev1 = abs(self.mu - humidity1)/math.sqrt(self.var)
+        	if stddev1 < 2:
+        		self.update(humidity1, 4)
+        		
         # END STUDENT CODE
-        pass 
+        

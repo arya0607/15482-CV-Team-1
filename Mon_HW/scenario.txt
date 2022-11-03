@@ -1,0 +1,32 @@
+1. One test we could perform is comparing the readings from the new sensor to the other temperature sensor. 
+For the past 24 hours, we could compare the log data for both sensors. If the additional sensor has a significantly 
+different value from the first sensor, then this suggests that the issue might be limited to just the additional sensor. 
+In other words, the environment is still correct, but there may be a hardware issue with the additional sensor. To recover from this 
+problem, we could recalibrate or reset the sensor and get another reading after a set amount of time. Then we could double check the 
+temperature reading with the other sensor again and make sure they match.
+
+The biggest pro to this test over the 3rd test (fan) is that it can isolate the problem immediately to the additional sensor. 
+With the 3rd test, the sensor could still be accurate, but some environmental issues could also be at play here. The biggest con 
+of this test is that it is very simple. In the case that the 2 temperature sensors do match, then we have no indication of what is wrong.
+
+
+2. Another test we could potentially perform would be to turn on and off the lights over time and see if it impacts the sensor readings. 
+We could perform a pattern of turning off and on the lights once again over a period of 24 hours, and observe the graphs of the temperature 
+readings. This test could provide a signal and show if the sensor is broken if it does not react at all to the light turning on and off, as 
+a light turning on would increase the temperature, and turning it off would decrease the temperature. To recover from this problem, we would 
+have to replace the sensor. 
+
+The pros to this test over the 3rd test (fan) is that turning on and off the lights does not require any mechanical parts, so it would be a much 
+more reliable test to perform. However, a con to the light is that it may not heat the tank to a considerable amount that would be noticeable, 
+while the fan may cool the tank to a more noticeable amount. 
+
+
+3. Finally, we can also test by turning on the fan and seeing if it impacts the sensor readings. We can observe the temperature values over a 
+period of 24 hours as we alternate the fan’s state between “OFF” and “ON”. If the temperature readings do not decrease by turning on the fan, 
+then it is likely that the sensor itself is broken. If the temperature reading does decrease, then we can know that at least the sensor is reactive 
+to changes in temperature, and we can recalibrate it to account for this. Otherwise, we must replace the sensor. 
+
+This method is the best one because the sensor is very susceptible to changes made by the fan, as it produces a higher temperature difference 
+when compared to that of the light. Furthermore, we can efficiently and effectively determine the reactivity of the sensors, much more so than 
+varying the state of the lights would, because a fan would cool the tank to a faster degree than the lights, producing a very legible change when 
+compared to a slow and gradual change by the lights.

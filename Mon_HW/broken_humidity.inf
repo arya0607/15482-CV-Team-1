@@ -1,0 +1,13 @@
+# The interfence program currently does not handle baseline not 
+#   starting at midnight; in actuality, these changes happen 7 hours later
+AT 1-00:00:00
+humidity = [noise, noise] 
+
+AT 1-04:00:00
+humidity = [off, noise] 
+
+AT 1-08:00:00
+humidity = [noise, 99]
+
+AT 1-12:00:00
+humidity = [noise, noise]

@@ -8,7 +8,7 @@ from terrabot_utils import time_since_midnight
 import greenhouse_behaviors as gb
 import ping_behavior as ping
 import camera_behavior as camera_behavior
-import email_behavior as email_behavior
+import light_monitor as light_monitor
 
 
 class BehavioralGreenhouseAgent:
@@ -26,6 +26,8 @@ class BehavioralGreenhouseAgent:
         ), gb.LowerHumid(), gb.RaiseSMoist(), gb.LowerSMoist(), ping.Ping()]
         self.behavioral = layers.BehavioralLayer(sensors, actuators, behaviors)
         self.behavioral.startAll()
+        # added after
+        # self.executiveLayer.setMonitors(sensors, [light_monitor.Light_Monitor])
         # END STUDENT CODE
 
     def main(self):
@@ -50,7 +52,7 @@ class LayeredGreenhouseAgent:
         sensors = ros_hardware.ROSSensors()
         actuators = ros_hardware.ROSActuators()
         behaviors = [gb.Light(), gb.RaiseTemp(), gb.LowerTemp(
-        ), gb.LowerHumid(), gb.RaiseSMoist(), gb.LowerSMoist(), ping.Ping(), email_behavior.Email(), camera_behavior.TakeImage()]
+        ), gb.LowerHumid(), gb.RaiseSMoist(), gb.LowerSMoist(), ping.Ping(), camera_behavior.TakeImage()]
         self.behavioral = layers.BehavioralLayer(sensors, actuators, behaviors)
         self.planning = layers.PlanningLayer(schedulefile)
 
@@ -61,6 +63,8 @@ class LayeredGreenhouseAgent:
         self.executive.setSchedule(schedulefile)
         self.planning.getNewSchedule()
         # END STUDENT CODE
+        # added after
+        self.executive.setMonitors(sensors, [light_monitor.LightMonitor()])
 
     def main(self):
         rospy.sleep(2)
@@ -73,6 +77,7 @@ class LayeredGreenhouseAgent:
             self.behavioral.doStep()
             self.planning.doStep(t)
             self.executive.doStep(t)
+            print("main testing")
             # END STUDENT CODE
             rospy.sleep(1)
 

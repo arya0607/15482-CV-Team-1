@@ -21,29 +21,31 @@ class BehavioralLayer:
     def startBehavior(self,name):
         # BEGIN STUDENT CODE
         behavior = self.getBehavior(name)
-        if behavior != None and not self.isEnabled(behavior):
-        	behavior.start()
-        	self.enabled += [behavior]
+        if behavior and not self.isEnabled(behavior):
+            behavior.start()
+            self.enabled.append(behavior)
         # END STUDENT CODE
-       
+        pass
 
     def pauseBehavior(self,name):
         # BEGIN STUDENT CODE
         behavior = self.getBehavior(name)
-        if behavior != None and self.isEnabled(behavior):
-        	behavior.pause()
-        	self.enabled.remove(behavior)
+        if behavior and self.isEnabled(behavior):
+            behavior.pause()
+            self.enabled.remove(behavior)
         # END STUDENT CODE
-      
+        pass
 
     def doStep(self):
         for behavior in self.enabled:
             behavior.doStep()
 
     #more functions? write them here!
+    # BEGIN SANITIZE ALL
     def startAll(self):
-    	for behavior in self.behaviors:
-    		self.startBehavior(behavior.name)
+        for behavior in self.behaviors:
+            self.startBehavior(behavior.name)
+    # END SANITIZE ALL
 
 
 class ExecutiveLayer:
@@ -53,6 +55,9 @@ class ExecutiveLayer:
         self.laststep = -1
         self.monitors = []
         # Initialize any extra variables here
+        # BEGIN SANITIZE ALL
+        self.enabledBehaviors = []
+        # END SANITIZE ALL
 
     def setPlanningLayer(self, planning):
         self.planning = planning
@@ -85,25 +90,27 @@ class ExecutiveLayer:
         # NOTE: Disable any behaviors that need to be disabled
         #   before enabling any new behaviors
         # BEGIN STUDENT CODE
-        minutes = t/60
-        #disabling
-        for behaviorName in self.schedule:
-        	toStop = True;
-        	for (start,end) in self.schedule[behaviorName]:
-        		if start <= minutes < end:
-        			toStop = False
-        	if toStop:
-        		self.behavioral.pauseBehavior(behaviorName)
-        #enabling
-        for behaviorName in self.schedule:
-        	toStart = False
-        	for (start,end) in self.schedule[behaviorName]:
-        		if start <= minutes < end:
-        			toStart = True
-        	if toStart:
-        		self.behavioral.startBehavior(behaviorName)
-        		
-        
+        currTimeInMins = t / 60
+        # First disable any behaviors that need to be disabled
+        for behavior, times in self.schedule.items():
+            if (behavior in self.enabledBehaviors):
+                stillEnabled = False
+                for startTime, endTime in times:
+                    if startTime <= currTimeInMins and currTimeInMins < endTime:
+                        stillEnabled = True
+                        break
+                if (not stillEnabled):
+                    self.enabledBehaviors.remove(behavior)
+                    self.behavioral.pauseBehavior(behavior)
+
+        # Now enable any behaviors
+        for behavior, times in self.schedule.items():
+            if (not behavior in self.enabledBehaviors):
+                for startTime, endTime in times:
+                    if startTime <= currTimeInMins and currTimeInMins < endTime:
+                        self.enabledBehaviors.append(behavior)
+                        self.behavioral.startBehavior(behavior)
+                        break
         # END STUDENT CODE
         for monitor in self.monitors:
             monitor.doMonitor()

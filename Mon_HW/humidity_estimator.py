@@ -8,13 +8,12 @@ class HumidityEstimator(Monitor):
 
     def activate(self):
         # BEGIN STUDENT CODE
-        (mu0, var0) = 1,2
-        self.kf  = KalmanFilter(mu0,var0
+        (mu0, var0) = self.sensors.humidity,2
+        self.kf  = KalmanFilter(mu0,var0)
         self.current_state = dict()
         self.current_state.update(self.sensordata)
         self.current_state.update(self.actuators)
-        self.state = (self.sensordata)
-    
+   
         # END STUDENT CODE
         pass
 
@@ -25,20 +24,24 @@ class HumidityEstimator(Monitor):
 
         # END STUDENT CODE
         pass
+        
     def monitor(self):
         # BEGIN STUDENT CODE
         prevState = self.current_state
-        self.current_state = dict()
-        self.current_state.update(self.sensordata)
-        self.current_state.update(self.actuators)
+        #self.current_state = dict()
+        #self.current_state.update(self.sensordata)
+        #self.current_state.update(self.actuators)
 
         self.smoist = self.sensordata["smoist"]
         humidity0, humidity1 = self.smoist[0], self.smoist[1]
-        now,prev_state = self.current_state.,prevState
-        kf_estimate = self.kf.estimate(now, prev_state, humidity0, humidity1)
-        
-        self.sensordata["kf_estimate" ] = kf_estimate
-
+        now,prev_state = self.sensors.getTime(), prevState
+        outlier_rejection = False
+        self.kf.estimate(now, prev_state, humidity0, humidity1, outlier_rejection)
+       
+        self.executive.behavioral.getBehavior("lowerHumid").setHumidValue(self.kf.mu)
 
         # END STUDENT CODE
         pass
+
+	
+

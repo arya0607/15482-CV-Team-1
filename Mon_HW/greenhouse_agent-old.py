@@ -65,8 +65,8 @@ class LayeredGreenhouseAgent:
         self.planning.getNewSchedule()
         # END STUDENT CODE
         # added after
-        #self.executive.setMonitors(sensors, [hm.HumidityEstimator()])
-        self.executive.setMonitors(sensors, [light_monitor.LightMonitor(), hm.HumidityEstimator()])
+        #self.executive.setMonitors(sensors, [light_monitor.LightMonitor(), hm.HumidityEstimator()])
+        self.executive.setMonitors(sensors, [light_monitor.LightMonitor()])
     def main(self):
         rospy.sleep(2)
         while rospy.get_time() == 0:

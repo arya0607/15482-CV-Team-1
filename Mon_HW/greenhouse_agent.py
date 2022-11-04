@@ -9,6 +9,7 @@ import greenhouse_behaviors as gb
 import ping_behavior as ping
 import camera_behavior as camera_behavior
 import light_monitor as light_monitor
+import humidity_estimator as hm
 
 
 class BehavioralGreenhouseAgent:
@@ -64,8 +65,8 @@ class LayeredGreenhouseAgent:
         self.planning.getNewSchedule()
         # END STUDENT CODE
         # added after
+        #self.executive.setMonitors(sensors, [light_monitor.LightMonitor(), hm.HumidityEstimator()])
         self.executive.setMonitors(sensors, [light_monitor.LightMonitor()])
-
     def main(self):
         rospy.sleep(2)
         while rospy.get_time() == 0:

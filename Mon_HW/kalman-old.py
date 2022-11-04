@@ -26,10 +26,7 @@ class KalmanFilter():
     def predict(self, prediction, process_var):
         # BEGIN STUDENT CODE
         tempMu = self.mu
-        if tempMu == 0:
-            alpha = prediction
-        else:
-            alpha = prediction/tempMu
+        alpha = prediction/tempMu
         self.mu = prediction
         self.var = (alpha**2)*self.var + process_var
         # END STUDENT CODE
@@ -45,20 +42,20 @@ class KalmanFilter():
                  outlier_rejection=False):
         # BEGIN STUDENT CODE
         if outlier_rejection == False:
-            prediction = regression(now, prev_state)
-            self.predict(prediction, 1)
-            self.update(humidity0, 4)
-            self.update(humidity1, 4)
+        	prediction = regression(now, prev_state)
+        	self.predict(prediction, 1)
+        	self.update(humidity0, 4)
+        	self.update(humidity1, 4)
         else:
-            prediction = regression(now, prev_state)
-            self.predict(prediction, 1)
-            
-            stddev0 = abs(self.mu - humidity0)/2
-            if stddev0 < 2:
-                self.update(humidity0, 4)
-            stddev1 = abs(self.mu - humidity1)/2
-            if stddev1 < 2:
-                self.update(humidity1, 4)
+        	prediction = regression(now, prev_state)
+        	self.predict(prediction, 1)
+        	
+        	stddev0 = abs(self.mu - humidity0)/math.sqrt(self.var)
+        	if stddev0 < 2:
+        		self.update(humidity0, 4)
+        	stddev1 = abs(self.mu - humidity1)/math.sqrt(self.var)
+        	if stddev1 < 2:
+        		self.update(humidity1, 4)
         		
         # END STUDENT CODE
         

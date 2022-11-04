@@ -84,7 +84,9 @@ def output_input_adder(out_bit_values):
     num_bits = len(out_bit_values)-1
     model = cp_model.CpModel()
     a_bits = ['a%d' %i for i in range(num_bits)]
+    print(a_bits)
     b_bits = ['b%d' %i for i in range(num_bits)]
+    print(b_bits)
     out_bits = ['sum%d' %i for i in range(num_bits+1)]
 
     variables = {}
@@ -97,21 +99,47 @@ def output_input_adder(out_bit_values):
     solutions = []
     solver = cp_model.CpSolver()
     # BEGIN STUDENT CODE
+    sol_printer = SolutionCollector(list(map(lambda x: variables[x],a_bits)), list(map(lambda x: variables[x],b_bits)))
+    solver.parameters.enumerate_all_solutions = True
+    status = solver.Solve(model, sol_printer)
+    
+    print('Status = %s' % solver.StatusName(status))
+    print('Number of solutions found: %i' % sol_printer.solution_count())
+
+    return sol_printer.solutions
     # END STUDENT CODE
 
-    return solutions
-
 class SolutionCollector(cp_model.CpSolverSolutionCallback):
-    solutions = []
     def __init__(self, a_bits, b_bits):
         cp_model.CpSolverSolutionCallback.__init__(self)
         # BEGIN STUDENT CODE
+        self.length = len(a_bits )
+        self.__variables = a_bits + b_bits
+        self.__solution_count = 0
+        self.solutions = []
+        self.a_bits = a_bits
+        self.b_bits = b_bits
         # END STUDENT CODE
 
     def OnSolutionCallback(self):
         # BEGIN STUDENT CODE
+        self.__solution_count += 1
+        a_values = []
+        for a in self.a_bits:
+            print('%s=%i' % (a, self.Value(a)), end=' ')
+            a_values.append(self.Value(a))
+        b_values = []
+        for b in self.b_bits:
+            print('%s=%i' % (b, self.Value(b)), end=' ')
+            b_values.append(self.Value(b))
+        print()
+        self.solutions.append((a_values, b_values))
+        assert(self.__solution_count == len(self.solutions))
         # END STUDENT CODE
         pass
+
+    def solution_count(self):
+        return self.__solution_count
 
 def convert_to_bits(value, nbits):
     if (value < 0 or value > 2**nbits-1):

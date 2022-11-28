@@ -170,8 +170,6 @@ class JobScheduling():
                         interval = self.intervals[self._key(job, task, machine)]
                         allInts.append(interval)
             model.AddNoOverlap(allInts)
-
-                #add actual constraint for interval
             # END STUDENT CODE
             pass
 

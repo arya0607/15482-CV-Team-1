@@ -161,21 +161,16 @@ class JobScheduling():
         model = self.model
         for machine in self.machines:
             # BEGIN STUDENT CODE
-            intervals = []
+            allInts = []
             for job in self.jobs:
                 for task in job.tasks:
                     if self._key(job, task, machine) in self.starts:
                         start = self.starts[self._key(job, task, machine)]
                         end = self.ends[self._key(job, task, machine)]
-                        intervals.append((start, end))
-            for i in range(len(intervals)):
-                s = intervals[i][0]
-                e = intervals[i][1]
-                for j in range(i, len(intervals)):
-                    s2 = intervals[j][0]
-                    e2 = intervals[j][1]
-                model.Add(s < e)
-                model.Add(s2 < e2)
+                        interval = self.intervals[self._key(job, task, machine)]
+                        allInts.append(interval)
+            model.AddNoOverlap(allInts)
+
                 #add actual constraint for interval
             # END STUDENT CODE
             pass
@@ -200,6 +195,22 @@ class JobScheduling():
         model = self.model
         for job in self.jobs:
             # BEGIN STUDENT CODE
+            numTasks = len(job.tasks)
+            numScheduled = None
+            for task in job.tasks:
+                acc = None
+                for tm in task.task_machines:
+                    scheduled = self.scheduleds[self._key(job, task, tm.machine)]
+                    if acc is None:
+                        acc = scheduled
+                    else:
+                        acc += scheduled
+                if numScheduled is None:
+                    numScheduled = acc
+                else:
+                    numScheduled += acc
+            model.Add(numScheduled == numTasks)
+
             # END STUDENT CODE
             pass
 

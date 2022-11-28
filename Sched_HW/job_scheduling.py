@@ -192,19 +192,28 @@ class JobScheduling():
                 prev_tm = prev_task.task_machines
                 tm = task.task_machines
 
-                # find machines actually used
                 for p in prev_tm:
-                    if self.scheduleds[self._key(job, prev_task, p.machine)]:
-                        p_machine = p.machine
-                
-                for t in tm:
-                    if self.scheduleds[self._key(job, prev_task, t.machine)] == 1:
-                        machine = t.machine
+                    end = self.ends[self._key(job, prev_task, p.machine)]
+                    for t in tm:
+                        key = self._key(job, task, t.machine)
+                        start = self.starts[key]
+                        model.Add(end < start).OnlyEnforceIf(self.scheduleds[key])
 
-                # find intervals
-                prev_end = self.scheduleds[self._key(job, prev_task, p_machine)]
-                curr_start = self.scheduleds[self._key(job, prev_task, machine)]
-                model.Add(prev_end < curr_start)
+
+                # # find machines actually used
+                # for p in prev_tm:
+                #     self.ends
+                #     if self.scheduleds[self._key(job, prev_task, p.machine)]:
+                #         p_machine = p.machine
+                
+                # for t in tm:
+                #     if self.scheduleds[self._key(job, prev_task, t.machine)] == 1:
+                #         machine = t.machine
+
+                # # find intervals
+                # prev_end = self.scheduleds[self._key(job, prev_task, p_machine)]
+                # curr_start = self.scheduleds[self._key(job, prev_task, machine)]
+                # model.Add(prev_end < curr_start)
 
                 # update prev
                 prev_task = task

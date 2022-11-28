@@ -175,40 +175,15 @@ class JobScheduling():
 
     # For each job, add constraints such that the tasks of that job
     #   are done in sequence
-    # Don't forget that tasks can be achieved by different machines,
+    # Don't forgt that tasks can be achieved by different machines,
     #   and you need to account for that in the constraints
     def create_task_ordering_constraints(self):
         model = self.model
         for job in self.jobs:
-            intervals = []
             # BEGIN STUDENT CODE
-            # get list of task start/ends
-            # check that they're in order
-            # whichever machine is used for the first task in a job, it must end before the machine chosen for the second task in that job begins
-            prev_task = job.tasks[0]
-            for task in job.tasks[1:]:
-                prev_tm = prev_task.task_machines
-                tm = task.task_machines
-
-                # find machines actually used
-                for p in prev_tm:
-                    if self.scheduleds[self._key(job, prev_task, p.machine)]:
-                        p_machine = p.machine
-                
-                for t in tm:
-                    if self.scheduleds[self._key(job, prev_task, t.machine)] == 1:
-                        machine = t.machine
-
-                # find intervals
-                prev_end = self.scheduleds[self._key(job, prev_task, p_machine)]
-                curr_start = self.scheduleds[self._key(job, prev_task, machine)]
-                model.Add(prev_end < curr_start)
-
-                # update prev
-                prev_task = task
             # END STUDENT CODE
-            # pass
-
+            pass
+        
     # For each job, add constraints such that if a job is started it
     #   must be finished.  That is, either all tasks in a job are 
     #   scheduled, or none are

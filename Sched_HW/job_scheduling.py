@@ -181,9 +181,30 @@ class JobScheduling():
         model = self.model
         for job in self.jobs:
             # BEGIN STUDENT CODE
+            # get list of task start/ends
+            # check that they're in order
+            # whichever machine is used for the first task in a job, it must end before the machine chosen for the second task in that job begins
+            prev_task = job.tasks[0]
+            print("All", job.tasks)
+            for tIdx in range(1, len(job.tasks)):
+                task = job.tasks[tIdx]
+                print("Prev", prev_task)
+                print("Current", task)
+                prev_tm = prev_task.task_machines
+                tm = task.task_machines
+
+                for p in prev_tm:
+                    end = self.ends[self._key(job, prev_task, p.machine)]
+                    for t in tm:
+                        key = self._key(job, task, t.machine)
+                        start = self.starts[key]
+                        model.Add(end <= start).OnlyEnforceIf(self.scheduleds[key])
+
+                # update prev
+                prev_task = task
             # END STUDENT CODE
             pass
-        
+
     # For each job, add constraints such that if a job is started it
     #   must be finished.  That is, either all tasks in a job are 
     #   scheduled, or none are

@@ -275,6 +275,32 @@ class JobScheduling():
     def create_parts_constraints(self):
         model = self.model
         # BEGIN STUDENT CODE
+        for part in self.parts:
+            times = []
+            demands = []
+            actives = []
+            # get scheduled times which we use the tool
+            for job in self.jobs:
+                for task in job.tasks:
+                    if part in task.parts:
+                        amount = part.quantity
+                        # find machine used
+                        for machine in task.task_machines:
+                            start = self.starts[self._key(job, task, machine.machine)]
+                            end = self.ends[self._key(job, task, machine.machine)]
+                            times.append(start)
+                            times.append(end)
+                            demands.append(1)
+                            if self.isPartsTask(task) and part == task.produced_part:
+                                demands.append(-task.quantity)
+                            else:
+                                demands.append(-1)
+                            actives.append(self.scheduleds[self._key(job, task, machine.machine)])
+                            actives.append(self.scheduleds[self._key(job, task, machine.machine)])
+
+            mini = 0
+            maxi = part.quantity
+            model.AddReservoirConstraintWithActive(times, demands, actives, mini, maxi)
         # END STUDENT CODE
         pass
 

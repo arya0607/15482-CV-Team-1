@@ -292,7 +292,9 @@ class JobScheduling():
                             times.append(end)
                             demands.append(1)
                             if self.isPartsTask(task) and part == task.produced_part:
-                                demands.append(-task.quantity)
+                                demands.append(-1 - task.quantity)
+                                #demands.append(-task.quantity)
+                                
                             else:
                                 demands.append(-1)
                             actives.append(self.scheduleds[self._key(job, task, machine.machine)])

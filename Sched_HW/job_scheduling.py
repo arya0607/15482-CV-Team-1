@@ -185,11 +185,8 @@ class JobScheduling():
             # check that they're in order
             # whichever machine is used for the first task in a job, it must end before the machine chosen for the second task in that job begins
             prev_task = job.tasks[0]
-            print("All", job.tasks)
             for tIdx in range(1, len(job.tasks)):
                 task = job.tasks[tIdx]
-                print("Prev", prev_task)
-                print("Current", task)
                 prev_tm = prev_task.task_machines
                 tm = task.task_machines
 
@@ -224,6 +221,8 @@ class JobScheduling():
                         acc = scheduled
                     else:
                         acc += scheduled
+                    start = self.starts[self._key(job, task, tm.machine)]
+                    end = self.ends[self._key(job, task, tm.machine)]
                 if numScheduled is None:
                     numScheduled = acc
                 else:

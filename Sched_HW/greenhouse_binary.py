@@ -55,6 +55,17 @@ class Greenhouse_Binary:
     #     see self.behaviors_info
     def createDurationConstraints(self, model):
         # BEGIN STUDENT CODE
+        # print(self.behaviors_info)
+        for behavior in self.behaviors_info:
+            (min_limit, _, _) = self.behaviors_info[behavior]
+            acc = None
+            for time in range(self.horizon):
+                curr = self.all_jobs[behavior,time]
+                if acc is None:
+                    acc = curr
+                else:
+                    acc += curr
+            model.Add(acc >= (min_limit // self.minutes_per_chunk))
         # END STUDENT CODE
         pass
 
@@ -74,6 +85,21 @@ class Greenhouse_Binary:
     #    Camera: lights on
     def createMutualExclusiveConstraints(self,model):
         # BEGIN STUDENT CODE
+        mutex = [('LowerTemp', 'RaiseTemp'), ('LowerTemp', 'LowerHumid'), ('LowerTemp', 'LowerSMoist'), 
+            ('LowerTemp', 'RaiseSMoist'), ('LowerTemp', 'Lights'), ('LowerTemp', 'Camera'), 
+            ('RaiseTemp', 'LowerHumid'), ('RaiseTemp', 'LowerSMoist'), 
+            ('RaiseTemp', 'Lights'), ('RaiseTemp', 'Camera'),
+            ('LowerHumid', 'LowerSMoist'), ('LowerHumid', 'RaiseSMoist'),
+            ('LowerSMoist', 'RaiseSMoist'), ('Lights', 'Camera')]
+        for time in range(self.horizon):
+            for a, b in mutex:
+                if a == 'Lights':
+                    a = 'Light'
+                if b == 'Lights':
+                    b = 'Light'
+                aa = self.all_jobs[a,time]
+                bb = self.all_jobs[b,time]
+                model.Add(aa + bb <= 1)
         # END STUDENT CODE
         pass
 
@@ -81,6 +107,17 @@ class Greenhouse_Binary:
     # between [20,24) U [0,8)
     def createNightConstraints(self, model):
         # BEGIN STUDENT CODE
+        for behavior in self.behaviors_info:
+            (_, _, max_night) = self.behaviors_info[behavior]
+            acc = None
+            for time in range(self.horizon):
+                if not (60 * 8 <= time * self.minutes_per_chunk < 60 * 20):
+                    curr = self.all_jobs[behavior,time]
+                    if acc is None:
+                        acc = curr
+                    else:
+                        acc += curr
+            model.Add(acc <= (max_night // self.minutes_per_chunk))
         # END STUDENT CODE
         pass
 
@@ -89,6 +126,42 @@ class Greenhouse_Binary:
     # only true for following behaviors: ["LowerTemp","LowerHumid","LowerSMoist","Camera","RaiseTemp","RaiseSMoist"]
     def createSpacingConstraints(self,model):
         # BEGIN STUDENT CODE
+        print()
+        print('light', self.behaviors_info['Light'])
+        for behavior in self.behaviors_info:
+            if behavior == 'Light':
+                continue
+            (x, (mi, ma), _) = self.behaviors_info[behavior]
+            mi = mi // self.minutes_per_chunk
+            ma = ma // self.minutes_per_chunk
+            mi += 1
+            ma += 1
+            start = 0
+            end = self.horizon
+            if behavior == 'Camera':
+                start = (8 * 60) // self.minutes_per_chunk
+                end = ((20 * 60) // self.minutes_per_chunk)
+            print(behavior, x, mi, ma)
+            for i in range(start, end - mi + 1):
+                acc = None
+                for time in range(i, i + mi):
+                    curr = self.all_jobs[behavior,time]
+                    if acc is None:
+                        acc = curr
+                    else:
+                        acc += curr
+                # print(acc)
+                model.Add(acc <= 1)
+            for i in range(start, end - mi + 1):
+                acc = None
+                for time in range(i, i + ma):
+                    curr = self.all_jobs[behavior,min(time, end - 1)]
+                    if acc is None:
+                        acc = curr
+                    else:
+                        acc += curr
+                print(acc)
+                model.Add(acc >= 1)
         # END STUDENT CODE
         pass
 

@@ -239,6 +239,30 @@ class JobScheduling():
     def create_tools_constraints(self):
         model = self.model
         # BEGIN STUDENT CODE
+        for tool in self.tools:
+            times = []
+            demands = []
+            actives = []
+            # get scheduled times which we use the tool
+            for job in self.jobs:
+                for task in job.tasks:
+                    if tool in task.tools:
+                        amount = tool.num
+                        # find machine used
+                        for machine in task.task_machines:
+                            start = self.starts[self._key(job, task, machine.machine)]
+                            end = self.ends[self._key(job, task, machine.machine)]
+                            times.append(start)
+                            times.append(end)
+                            demands.append(1)
+                            demands.append(-1)
+                            actives.append(self.scheduleds[self._key(job, task, machine.machine)])
+                            actives.append(self.scheduleds[self._key(job, task, machine.machine)])
+
+            mini = 0
+            maxi = tool.num
+            model.AddReservoirConstraintWithActive(times, demands, actives, mini, maxi)
+
         # END STUDENT CODE
         pass
 

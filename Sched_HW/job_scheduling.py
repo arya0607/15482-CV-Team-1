@@ -221,14 +221,13 @@ class JobScheduling():
                         acc = scheduled
                     else:
                         acc += scheduled
-                    start = self.starts[self._key(job, task, tm.machine)]
-                    end = self.ends[self._key(job, task, tm.machine)]
                 if numScheduled is None:
                     numScheduled = acc
                 else:
                     numScheduled += acc
-            model.Add(numScheduled == numTasks)
-
+            scheduleNone = model.NewBoolVar("noneSchedule")
+            model.Add(numScheduled >= numTasks).OnlyEnforceIf(scheduleNone.Not())
+            model.Add(numScheduled == 0).OnlyEnforceIf(scheduleNone)
             # END STUDENT CODE
             pass
 
@@ -262,7 +261,6 @@ class JobScheduling():
             mini = 0
             maxi = tool.num
             model.AddReservoirConstraintWithActive(times, demands, actives, mini, maxi)
-
         # END STUDENT CODE
         pass
 
@@ -282,27 +280,36 @@ class JobScheduling():
             # get scheduled times which we use the tool
             for job in self.jobs:
                 for task in job.tasks:
-                    if part in task.parts:
+                    if len(task.parts) == 0:
+                        if self.isPartsTask(task) and part.name == task.produced_part.name:
+                            for machine in task.task_machines:
+                                end = self.ends[self._key(job, task, machine.machine)]
+                                times.append(end)
+                                demands.append(-task.quantity)
+                                actives.append(self.scheduleds[self._key(job, task, machine.machine)])
+                    elif part in task.parts:
                         amount = part.quantity
                         # find machine used
                         for machine in task.task_machines:
                             start = self.starts[self._key(job, task, machine.machine)]
                             end = self.ends[self._key(job, task, machine.machine)]
                             times.append(start)
-                            times.append(end)
                             demands.append(1)
-                            if self.isPartsTask(task) and part == task.produced_part:
-                                demands.append(-1 - task.quantity)
-                                #demands.append(-task.quantity)
-                                
-                            else:
-                                demands.append(-1)
-                            actives.append(self.scheduleds[self._key(job, task, machine.machine)])
+                            if self.isPartsTask(task) and part.name == task.produced_part.name:
+                                times.append(end)
+                                demands.append(-task.quantity)
+                                actives.append(self.scheduleds[self._key(job, task, machine.machine)])
                             actives.append(self.scheduleds[self._key(job, task, machine.machine)])
 
-            mini = 0
+            mini = -999999999
             maxi = part.quantity
+            #print("Times", times)
+            #print("Demands", demands)
+            #print("Actives", actives)
+            #print("Min", mini)
+            #print("Max", maxi)
             model.AddReservoirConstraintWithActive(times, demands, actives, mini, maxi)
+        print()
         # END STUDENT CODE
         pass
 

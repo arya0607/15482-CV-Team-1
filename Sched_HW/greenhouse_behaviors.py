@@ -207,6 +207,9 @@ class LowerTemp(Behavior):
 
         # STUDENT CODE: Modify these lines to use your own initial state name
         #               and add all your FSM states
+        self.LowerTempActivationCount = 0
+        self.LowerTempEnableCount = 0
+        self.has_been_activated = False
         self.initial = 'halt'
         self.states = [self.initial, 'init', 'toohigh', 'perfect']
 
@@ -231,6 +234,7 @@ class LowerTemp(Behavior):
     def enable(self):
         # Use 'enable' trigger to transition the FSM out of the 'initial' state
         self.setInitial()
+        self.LowerTempEnableCount += 1
         self.trigger("enable")
 
     def disable(self):
@@ -257,6 +261,9 @@ class LowerTemp(Behavior):
     # Add all your before / after action functions here
     # BEGIN STUDENT CODE
     def fan_on(self):
+        if not self.has_been_activated:
+            self.LowerTempActivationCount += 1
+            self.has_been_activated == True
         self.setFan(True)
 
     def fan_off(self):
@@ -277,6 +284,9 @@ class LowerHumid(Behavior):
 
     def __init__(self):
         super(LowerHumid, self).__init__("LowerHumidBehavior")
+        self.LowerHumidActivationCount = 0
+        self.LowerHumidEnableCount = 0
+        self.has_been_activated = False
 
         # STUDENT CODE: Modify these lines to use your own initial state name
         #               and add all your FSM states
@@ -304,6 +314,7 @@ class LowerHumid(Behavior):
     def enable(self):
         # Use 'enable' trigger to transition the FSM out of the 'initial' state
         self.setInitial()
+        self.LowerHumidEnableCount += 1
         self.trigger("enable")
 
     def disable(self):
@@ -313,17 +324,17 @@ class LowerHumid(Behavior):
 
     def perceive(self):
         if self.humidEstimate == None:
-        	self.humid = self.sensordata["humid"]
+            self.humid = self.sensordata["humid"]
         else:
-        	self.humid = self.humidEstimate
+            self.humid = self.humidEstimate
         #self.humid = self.sensordata["humid"]
 
     def act(self):
         # Use 'doStep' trigger for all other transitions
         self.trigger("doStep")
-       
-    def setHumidValue(self,update):
-    	self.humidEstimate = update
+
+    def setHumidValue(self, update):
+        self.humidEstimate = update
 
     # Add all your condition functions here
     # BEGIN STUDENT CODE
@@ -337,6 +348,9 @@ class LowerHumid(Behavior):
     # Add all your before / after action functions here
     # BEGIN STUDENT CODE
     def fan_on(self):
+        if not self.has_been_activated:
+            Behavior.LowerHumidActivationCount += 1
+            self.has_been_activated == True
         self.setFan(True)
 
     def fan_off(self):

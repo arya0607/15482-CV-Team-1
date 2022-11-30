@@ -303,13 +303,7 @@ class JobScheduling():
 
             mini = -999999999
             maxi = part.quantity
-            #print("Times", times)
-            #print("Demands", demands)
-            #print("Actives", actives)
-            #print("Min", mini)
-            #print("Max", maxi)
             model.AddReservoirConstraintWithActive(times, demands, actives, mini, maxi)
-        print()
         # END STUDENT CODE
         pass
 
@@ -333,6 +327,14 @@ class JobScheduling():
         model = self.model
         self.cost = model.NewIntVar(0, 1000000, "cost")
         # BEGIN STUDENT CODE
+        for job in self.jobs:
+            for task in job.tasks:
+                for tm in task.task_machines:
+                    sched = self.scheduleds[self._key(job, task, tm.machine)]
+                    self.cost += (sched * tm.duration * tm.machine.energy_cost)
+
+                    for part in task.parts:
+                        self.cost += sched * part.cost
         # END STUDENT CODE
 
     def add_optimization(self):

@@ -7,10 +7,6 @@ class ActuatorMonitor(Monitor):
 
     def __init__(self, period=5):
         super(ActuatorMonitor, self).__init__("ActuatorMonitor", period)
-        self.LowerTempBehavior = self.executive.behavioral.getBehavior(
-            "LowerTempBehavior")
-        self.LowerHumidBehavior = self.executive.behavioral.getBehavior(
-            "LowerHumidBehavior")
         self.reset()
 
     def reset(self):
@@ -26,10 +22,13 @@ class ActuatorMonitor(Monitor):
         self.behaviors_info["Camera"] = (1*60, (3*60, 6*60), 0)
 
     def activate(self):
-        pass
+        self.LowerTempBehavior = self.executive.behavioral.getBehavior(
+            "LowerTempBehavior")
+        self.LowerHumidBehavior = self.executive.behavioral.getBehavior(
+            "LowerHumidBehavior")
 
     def perceive(self):
-        pass
+        self.mtime = self.sensordata["midnight_time"]
 
     def monitor(self):
         # if we are past midnight, update a new schedule
@@ -42,9 +41,8 @@ class ActuatorMonitor(Monitor):
 
             # activations give the actual amount of times a behavior actuator was
             # activated, and can be less than the number of blocks scheduled
-            lower_humid_activations = self.LowerTempBehavior.LowerTempActivationCount
-            lower_temp_activations = self.LowerTempBehavior.LowerHumidActivationCount
-
+            lower_humid_activations = self.LowerHumidBehavior.LowerHumidActivationCount
+            lower_temp_activations = self.LowerTempBehavior.LowerTempActivationCount
 
             # update the time frame of LowerHumid
             (oldHumidTime, (_, _), _) = self.behaviors_info["LowerHumid"]
@@ -53,10 +51,13 @@ class ActuatorMonitor(Monitor):
                 newOldTime = max(0, oldHumidTime-60)
             # if we activated for all blocks of time, increase time
             else:
-                newOldTime = min(24, oldHumidTime+60)
+                newOldTime = min(12*60, oldHumidTime+60)
+            # print("current_lower_humid_blocks: ", current_lower_humid_blocks)
+            # print("lower_humid_activations: ", lower_humid_activations)
+            # print("oldHumidTime: ", oldHumidTime)
+            # print("newOldTime: ", newOldTime)
             self.behaviors_info["LowerHumid"] = (
                 newOldTime, (self.minutes, 60), 12*60)
-
 
             # update the time frame of LowerTemp
             (oldTempTime, (_, _), _) = self.behaviors_info["LowerTemp"]
@@ -65,13 +66,19 @@ class ActuatorMonitor(Monitor):
                 newOldTime = max(0, oldTempTime-60)
             # if we activated for all blocks of time, increase time
             else:
-                newOldTime = min(24, oldTempTime+60)
+                newOldTime = min(4*60, oldTempTime+60)
+            # print("current_lower_temp_blocks: ", current_lower_temp_blocks)
+            # print("lower_temp_activations: ", lower_temp_activations)
+            # print("oldTempTime: ", oldTempTime)
+            # print("newOldTime: ", newOldTime)
             self.behaviors_info["LowerTemp"] = (
-                newOldTime, (self.minutes, 60), 12*60)
+                newOldTime, (2*60, 4*60), 12*60)
+            # print("updating schedule")
 
             new_binary = Greenhouse_Binary(
-                "main_schedule.txt", self.behaviors_info, self.minutes)
-            new_binary.solveProblem()
+                "greenhouse_schedule.txt", self.behaviors_info, self.minutes)
+            sol = new_binary.solveProblem(visualize=False)
+            # print(sol)
 
             self.LowerHumidBehavior.LowerHumidActivationCount = 0
             self.LowerHumidBehavior.LowerHumidEnableCount = 0
@@ -81,13 +88,7 @@ class ActuatorMonitor(Monitor):
             self.LowerTempBehavior.LowerTempEnableCount = 0
             self.LowerTempBehavior.has_been_activated = False
 
+            self.executive.setSchedule("greenhouse_schedule.txt")
+            self.executive.requestNewSchedule()
+
             self.reset()
-
-        time_left = 0
-        for interval in self.lighting_intervals:
-            if (interval[0] <= time and time < interval[1]):
-                time_left = interval[1] - time
-            elif (time < interval[0]):
-                time_left += interval[1] - interval[0]
-
-        return time_left

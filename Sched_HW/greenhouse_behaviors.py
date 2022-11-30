@@ -287,6 +287,7 @@ class LowerHumid(Behavior):
         self.LowerHumidActivationCount = 0
         self.LowerHumidEnableCount = 0
         self.has_been_activated = False
+        self.humidEstimate = None
 
         # STUDENT CODE: Modify these lines to use your own initial state name
         #               and add all your FSM states
@@ -349,7 +350,7 @@ class LowerHumid(Behavior):
     # BEGIN STUDENT CODE
     def fan_on(self):
         if not self.has_been_activated:
-            Behavior.LowerHumidActivationCount += 1
+            self.LowerHumidActivationCount += 1
             self.has_been_activated == True
         self.setFan(True)
 
